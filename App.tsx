@@ -1,30 +1,27 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import LoginScreen from "./screens/LoginScreen";
+import RegistrationScreen from "./screens/RegistrationScreen"; // ✅ Add this
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import ProfileScreen from "./screens/ProfileScreen";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
-// TODO: Navigation Container
 const Stack = createNativeStackNavigator();
-export default function App() {
+
+function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/auth.user
-        const uid = user.uid;
         setIsLoggedIn(true);
         console.log("USER LOGGED IN");
-
-        // ...
       } else {
-        // User is signed out
+        setIsLoggedIn(false);
         console.log("USER NOT LOGGED IN");
       }
     });
@@ -32,20 +29,24 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      {isLoggedIn ? (
-        <Stack.Navigator>
-          <Stack.Screen name="Login" component={ProfileScreen} />
-        </Stack.Navigator>
-      ) : (
-        <Stack.Navigator>
-          <Stack.Screen name="Login" component={LoginScreen} />
-        </Stack.Navigator>
-      )}
+      <Stack.Navigator>
+        {isLoggedIn ? (
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+        ) : (
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegistrationScreen} />
+          </>
+        )}
+      </Stack.Navigator>
     </NavigationContainer>
-    // Research how to use a useContext hook
   );
 }
 
-// 1. setup the navigation is logged in
-// 2. setup the navigation is logged out
-// 3. listen to whether the user is logged in or not
+export default function AppWrapper() {
+  return (
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  );
+}

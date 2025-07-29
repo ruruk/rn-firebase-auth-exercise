@@ -8,10 +8,12 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { loginUSer } from "../services/authService";
+import { useNavigation } from "@react-navigation/native";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigation = useNavigation();
 
   //   TODO: Login Function
   const login = () => {
@@ -42,7 +44,14 @@ const LoginScreen = () => {
           <Text style={styles.buttonText}>Login Button</Text>
         </TouchableOpacity>
 
-        {/* TODO: Add Register Navigation */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Register")}
+          style={{ marginTop: 20 }}
+        >
+          <Text style={{ color: "blue", textAlign: "center" }}>
+            Don't have an account? Register
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
